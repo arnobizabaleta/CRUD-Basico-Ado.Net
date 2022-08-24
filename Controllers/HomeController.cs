@@ -4,16 +4,28 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Proyecto7.Models;
+using Proyecto7.Permisos;
 
 namespace Proyecto7.Controllers
 {
     public class HomeController : Controller
     {
+        /*
+     Antes que se ejecute cualquier método del controlador principal
+    Se ejecuta la logica de la clase ValidarSessionAttributte
+     */
+        [ValidarSessionAttributte]
         // GET: Home
         public ActionResult Index()
         {
             MantenimientoArticulo ma = new MantenimientoArticulo();
             return View(ma.RecuperarTodos());
+        }
+
+        public ActionResult CerrarSesion()
+        {
+            Session["usuario"] = null;//Empting Session User
+            return RedirectToAction("Login", "Acceso");// Redirect to Login
         }
 
         // GET: Home/Create

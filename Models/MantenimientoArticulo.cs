@@ -20,8 +20,11 @@ namespace Proyecto7.Models
             con = new SqlConnection(constr);
         }
 
+        
         public int Alta(Articulo art)
         {
+            //Comentar el código temporalmente para hacer cambios
+            /*
             Conectar();
             SqlCommand comando = new SqlCommand("insert into articulos(codigo,descripcion,precio) values (@codigo,@descripcion,@precio)", con);
             comando.Parameters.Add("@codigo", SqlDbType.Int);
@@ -34,6 +37,31 @@ namespace Proyecto7.Models
             int i = comando.ExecuteNonQuery();
             con.Close();
             return i;
+            */
+
+            bool registrado;
+            string mensaje;
+            Conectar();
+            SqlCommand cmd = new SqlCommand("sp_RegistrarProducto", con);
+            cmd.Parameters.Add("@codigo", SqlDbType.Int);
+            cmd.Parameters.Add("@descripcion", SqlDbType.VarChar);
+            cmd.Parameters.Add("@precio", SqlDbType.Float);
+            cmd.Parameters["@codigo"].Value = art.Codigo;
+            cmd.Parameters["@descripcion"].Value = art.Descripcion;
+            cmd.Parameters["@precio"].Value = art.Precio;
+            cmd.Parameters.Add("Registrado", SqlDbType.Bit).Direction = ParameterDirection.Output;
+            cmd.Parameters.Add("Mensaje", SqlDbType.VarChar, 100).Direction = ParameterDirection.Output;
+            cmd.CommandType = CommandType.StoredProcedure;
+            con.Open();
+
+            int i = cmd.ExecuteNonQuery();
+
+            registrado = Convert.ToBoolean(cmd.Parameters["Registrado"].Value);
+            mensaje = cmd.Parameters["Mensaje"].Value.ToString();
+            //ViewData["Mensaje"] = mensaje;
+            con.Close();
+            return i;
+
         }
 
         public List<Articulo> RecuperarTodos()
